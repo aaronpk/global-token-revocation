@@ -147,10 +147,6 @@ Table of Contents
 
 3.  Token Revocation
 
-   Upon receiving a token revocation request, implementations MUST
-   support the revocation of refresh tokens and active user sessions,
-   and SHOULD support the revocation of access tokens (see Section 4).
-
    A revocation request is a POST request to the Global Token Revocation
    endpoint.  This URL MUST conform to the rules given in [RFC6749],
    Section 3.1.
@@ -159,6 +155,10 @@ Table of Contents
    the scope of this specification.  For example, the authorization
    server may publish documentation of the location of the endpoint, or
    may manually register it with tools that will use it.
+
+   Upon receiving a token revocation request, implementations MUST
+   support the revocation of refresh tokens and active user sessions,
+   and SHOULD support the revocation of access tokens (see Section 4).
 
 3.1.  Revocation Request
 

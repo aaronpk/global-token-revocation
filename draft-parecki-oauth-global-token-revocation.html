@@ -1251,9 +1251,9 @@ the Authorization Server or OpenID Provider that is used for End-User authentica
       <h2 id="name-token-revocation">
 <a href="#section-3" class="section-number selfRef">3. </a><a href="#name-token-revocation" class="section-name selfRef">Token Revocation</a>
       </h2>
-<p id="section-3-1">Upon receiving a token revocation request, implementations <span class="bcp14">MUST</span> support the revocation of refresh tokens and active user sessions, and <span class="bcp14">SHOULD</span> support the revocation of access tokens (see <a href="#implementation-notes" class="auto internal xref">Section 4</a>).<a href="#section-3-1" class="pilcrow">¶</a></p>
-<p id="section-3-2">A revocation request is a POST request to the Global Token Revocation endpoint. This URL <span class="bcp14">MUST</span> conform to the rules given in <span>[<a href="#RFC6749" class="cite xref">RFC6749</a>]</span>, Section 3.1.<a href="#section-3-2" class="pilcrow">¶</a></p>
-<p id="section-3-3">The means to obtain the location of the revocation endpoint is out of the scope of this specification.  For example, the authorization server may publish documentation of the location of the endpoint, or may manually register it with tools that will use it.<a href="#section-3-3" class="pilcrow">¶</a></p>
+<p id="section-3-1">A revocation request is a POST request to the Global Token Revocation endpoint. This URL <span class="bcp14">MUST</span> conform to the rules given in <span>[<a href="#RFC6749" class="cite xref">RFC6749</a>]</span>, Section 3.1.<a href="#section-3-1" class="pilcrow">¶</a></p>
+<p id="section-3-2">The means to obtain the location of the revocation endpoint is out of the scope of this specification.  For example, the authorization server may publish documentation of the location of the endpoint, or may manually register it with tools that will use it.<a href="#section-3-2" class="pilcrow">¶</a></p>
+<p id="section-3-3">Upon receiving a token revocation request, implementations <span class="bcp14">MUST</span> support the revocation of refresh tokens and active user sessions, and <span class="bcp14">SHOULD</span> support the revocation of access tokens (see <a href="#implementation-notes" class="auto internal xref">Section 4</a>).<a href="#section-3-3" class="pilcrow">¶</a></p>
 <div id="revocation-request">
 <section id="section-3.1">
         <h3 id="name-revocation-request">
