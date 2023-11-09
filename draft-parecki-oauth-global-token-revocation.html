@@ -7,7 +7,7 @@
 <title>Global Token Revocation</title>
 <meta content="Aaron Parecki" name="author">
 <meta content="
-       TODO Abstract 
+       Global Token Revocation enables parties such as a security incident management tool or an external Identity Provider to send a request to an Authorization Server to indicate that it should revoke all of the user's existing tokens and sessions. 
     " name="description">
 <meta content="xml2rfc 3.18.2" name="generator">
 <meta content="oauth" name="keyword">
@@ -1062,7 +1062,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <h1 id="title">Global Token Revocation</h1>
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
-<p id="section-abstract-1">TODO Abstract<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+<p id="section-abstract-1">Global Token Revocation enables parties such as a security incident management tool or an external Identity Provider to send a request to an Authorization Server to indicate that it should revoke all of the user's existing tokens and sessions.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
 </section>
 <section class="note rfcEditorRemove" id="section-note.1">
       <h2 id="name-about-this-document">
@@ -1132,10 +1132,13 @@ svg :is([fill="white"], [fill^="#fff"]) {
             <p id="section-toc.1-1.1.1" class="keepWithNext"><a href="#section-1" class="auto internal xref">1</a>.  <a href="#name-introduction" class="internal xref">Introduction</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2">
-            <p id="section-toc.1-1.2.1" class="keepWithNext"><a href="#section-2" class="auto internal xref">2</a>.  <a href="#name-conventions-and-definitions" class="internal xref">Conventions and Definitions</a></p>
+            <p id="section-toc.1-1.2.1"><a href="#section-2" class="auto internal xref">2</a>.  <a href="#name-conventions-and-definitions" class="internal xref">Conventions and Definitions</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.1">
                 <p id="section-toc.1-1.2.2.1.1" class="keepWithNext"><a href="#section-2.1" class="auto internal xref">2.1</a>.  <a href="#name-terminology" class="internal xref">Terminology</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.2">
+                <p id="section-toc.1-1.2.2.2.1" class="keepWithNext"><a href="#section-2.2" class="auto internal xref">2.2</a>.  <a href="#name-roles" class="internal xref">Roles</a></p>
 </li>
             </ul>
 </li>
@@ -1198,7 +1201,9 @@ svg :is([fill="white"], [fill^="#fff"]) {
       <h2 id="name-introduction">
 <a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
       </h2>
-<p id="section-1-1">TODO Introduction<a href="#section-1-1" class="pilcrow">¶</a></p>
+<p id="section-1-1">An OAuth Authorization Server issues tokens in response to a user authorizing a client. A party external to the OAuth Authorization Server may wish to instruct the Authorization Server to revoke all tokens belonging to a particular user.<a href="#section-1-1" class="pilcrow">¶</a></p>
+<p id="section-1-2">For example, a security incident management tool may detect anomalous behaviour on a user's account, or if the user logged in through an enterprise Identity Provider, the Identity Provider may want to revoke all of a user's tokens on a security incident or on the employee's termination.<a href="#section-1-2" class="pilcrow">¶</a></p>
+<p id="section-1-3">This specification describes an API endpoint so that an authorization server can accept requests from external parties to revoke all tokens associated with a given user.<a href="#section-1-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="conventions-and-definitions">
@@ -1221,7 +1226,19 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
 "Redirection URI", "Refresh Token", "Resource Owner", "Resource Server" (RS)
 and "Token Endpoint" defined by <span>[<a href="#RFC6749" class="cite xref">RFC6749</a>]</span>,
 and the terms "OpenID Provider" (OP) and "ID Token" defined by <span>[<a href="#OpenID" class="cite xref">OpenID</a>]</span>.<a href="#section-2.1-1" class="pilcrow">¶</a></p>
-<p id="section-2.1-2">TODO: Replace RFC6749 references with OAuth 2.1<a href="#section-2.1-2" class="pilcrow">¶</a></p>
+<p id="section-2.1-2">This specification uses the term "Identity Provider" (IdP) to refer to
+the Authorization Server or OpenID Provider that is used for End-User authentication.<a href="#section-2.1-2" class="pilcrow">¶</a></p>
+<p id="section-2.1-3">TODO: Replace RFC6749 references with OAuth 2.1<a href="#section-2.1-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="roles">
+<section id="section-2.2">
+        <h3 id="name-roles">
+<a href="#section-2.2" class="section-number selfRef">2.2. </a><a href="#name-roles" class="section-name selfRef">Roles</a>
+        </h3>
+<p id="section-2.2-1">In a typical OAuth deployment, the OAuth client obtains tokens from the authorization server when a user logs in and authorizes the client. In many cases, the method by which a user logs in at the authorization server is through an external identity provider.<a href="#section-2.2-1" class="pilcrow">¶</a></p>
+<p id="section-2.2-2">For example, a mobile chat application is an OAuth Client, and obtains tokens from its backend server which stores the chat messages. The mobile chat backend plays the OAuth roles of "Resource Server" and "Authorization Server".<a href="#section-2.2-2" class="pilcrow">¶</a></p>
+<p id="section-2.2-3">In some cases, the user will log in to the Authorization Server using an external (e.g. enterprise) Identity Provider.<a href="#section-2.2-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1411,6 +1428,10 @@ Authorization: Bearer f5641763544a7b24b08e4f74045
 <dt id="RFC6750">[RFC6750]</dt>
         <dd>
 <span class="refAuthor">Jones, M.</span> and <span class="refAuthor">D. Hardt</span>, <span class="refTitle">"The OAuth 2.0 Authorization Framework: Bearer Token Usage"</span>, <span class="seriesInfo">RFC 6750</span>, <span class="seriesInfo">DOI 10.17487/RFC6750</span>, <time datetime="2012-10" class="refDate">October 2012</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc6750">https://www.rfc-editor.org/rfc/rfc6750</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC7009">[RFC7009]</dt>
+        <dd>
+<span class="refAuthor">Lodderstedt, T., Ed.</span>, <span class="refAuthor">Dronia, S.</span>, and <span class="refAuthor">M. Scurtescu</span>, <span class="refTitle">"OAuth 2.0 Token Revocation"</span>, <span class="seriesInfo">RFC 7009</span>, <span class="seriesInfo">DOI 10.17487/RFC7009</span>, <time datetime="2013-08" class="refDate">August 2013</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc7009">https://www.rfc-editor.org/rfc/rfc7009</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC7523">[RFC7523]</dt>
         <dd>

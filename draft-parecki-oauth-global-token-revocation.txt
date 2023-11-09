@@ -13,7 +13,10 @@ Expires: 12 May 2024
 
 Abstract
 
-   TODO Abstract
+   Global Token Revocation enables parties such as a security incident
+   management tool or an external Identity Provider to send a request to
+   an Authorization Server to indicate that it should revoke all of the
+   user's existing tokens and sessions.
 
 About This Document
 
@@ -69,6 +72,7 @@ Table of Contents
    1.  Introduction
    2.  Conventions and Definitions
      2.1.  Terminology
+     2.2.  Roles
    3.  Token Revocation
      3.1.  Revocation Request
      3.2.  Revocation Response
@@ -86,7 +90,20 @@ Table of Contents
 
 1.  Introduction
 
-   TODO Introduction
+   An OAuth Authorization Server issues tokens in response to a user
+   authorizing a client.  A party external to the OAuth Authorization
+   Server may wish to instruct the Authorization Server to revoke all
+   tokens belonging to a particular user.
+
+   For example, a security incident management tool may detect anomalous
+   behaviour on a user's account, or if the user logged in through an
+   enterprise Identity Provider, the Identity Provider may want to
+   revoke all of a user's tokens on a security incident or on the
+   employee's termination.
+
+   This specification describes an API endpoint so that an authorization
+   server can accept requests from external parties to revoke all tokens
+   associated with a given user.
 
 2.  Conventions and Definitions
 
@@ -106,7 +123,26 @@ Table of Contents
    "Token Endpoint" defined by [RFC6749], and the terms "OpenID
    Provider" (OP) and "ID Token" defined by [OpenID].
 
+   This specification uses the term "Identity Provider" (IdP) to refer
+   to the Authorization Server or OpenID Provider that is used for End-
+   User authentication.
+
    TODO: Replace RFC6749 references with OAuth 2.1
+
+2.2.  Roles
+
+   In a typical OAuth deployment, the OAuth client obtains tokens from
+   the authorization server when a user logs in and authorizes the
+   client.  In many cases, the method by which a user logs in at the
+   authorization server is through an external identity provider.
+
+   For example, a mobile chat application is an OAuth Client, and
+   obtains tokens from its backend server which stores the chat
+   messages.  The mobile chat backend plays the OAuth roles of "Resource
+   Server" and "Authorization Server".
+
+   In some cases, the user will log in to the Authorization Server using
+   an external (e.g. enterprise) Identity Provider.
 
 3.  Token Revocation
 
@@ -299,6 +335,10 @@ Table of Contents
               Framework: Bearer Token Usage", RFC 6750,
               DOI 10.17487/RFC6750, October 2012,
               <https://www.rfc-editor.org/rfc/rfc6750>.
+
+   [RFC7009]  Lodderstedt, T., Ed., Dronia, S., and M. Scurtescu, "OAuth
+              2.0 Token Revocation", RFC 7009, DOI 10.17487/RFC7009,
+              August 2013, <https://www.rfc-editor.org/rfc/rfc7009>.
 
    [RFC7523]  Jones, M., Campbell, B., and C. Mortimore, "JSON Web Token
               (JWT) Profile for OAuth 2.0 Client Authentication and
