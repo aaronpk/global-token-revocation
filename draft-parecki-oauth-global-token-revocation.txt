@@ -75,8 +75,9 @@ Table of Contents
      2.2.  Roles
    3.  Token Revocation
      3.1.  Revocation Request
-     3.2.  Revocation Response
-       3.2.1.  Error Response
+     3.2.  Revocation Expectations
+     3.3.  Revocation Response
+       3.3.1.  Error Response
    4.  Implementation Notes
    5.  Security Considerations
    6.  IANA Considerations
@@ -191,7 +192,7 @@ Table of Contents
    }
 
    To request revocation of all tokens for a user identified by a user
-   ID at the authorization server, use the "opaque subject" identifier:
+   ID at the Authorization Server, use the "opaque subject" identifier:
 
    POST /global-token-revocation
    Host: example.com
@@ -205,7 +206,17 @@ Table of Contents
      }
    }
 
-3.2.  Revocation Response
+3.2.  Revocation Expectations
+
+   Upon receiving a revocation request, authorizing the request, and
+   validating the identified user, the Authorization Server MUST revoke
+   all active refresh tokens, and invalidate all active sessions.
+
+   If possible, the authorization server SHOULD invalidate all access
+   tokens, although this might not be technically feasible, see
+   Section 4.
+
+3.3.  Revocation Response
 
    This specification indicates success and error conditions by using
    HTTP response codes, and does not define the response body format or
@@ -215,7 +226,7 @@ Table of Contents
    requested set of tokens has begun, the server returns an HTTP 204
    response.
 
-3.2.1.  Error Response
+3.3.1.  Error Response
 
    The following HTTP response codes can be used to indicate various
    error conditions:
