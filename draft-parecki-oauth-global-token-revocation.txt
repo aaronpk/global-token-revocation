@@ -275,7 +275,7 @@ Table of Contents
 6.1.  OAuth Authorization Server Metadata
 
    IANA has (TBD) registered the following values in the IANA "OAuth
-   Authorization Server Metadata" registry of [IANA.OAuth.Parameters]
+   Authorization Server Metadata" registry of [IANA.oauth-parameters]
    established by [RFC8414].
 
    *Metadata Name*: global_token_revocation_endpoint
@@ -294,8 +294,8 @@ Table of Contents
    client authentication methods supported by this introspection
    endpoint.  The valid client authentication method values are those
    registered in the IANA "OAuth Token Endpoint Authentication Methods"
-   registry [IANA.OAuth.Parameters] or those registered in the IANA
-   "OAuth Access Token Types" registry [IANA.OAuth.Parameters].  (These
+   registry [IANA.oauth-parameters] or those registered in the IANA
+   "OAuth Access Token Types" registry [IANA.oauth-parameters].  (These
    values are and will remain distinct, due to Section 7.2.)  If
    omitted, the set of supported authentication methods MUST be
    determined by other means.
@@ -315,8 +315,9 @@ Table of Contents
               18, 24 June 2023, <https://datatracker.ietf.org/doc/html/
               draft-ietf-secevent-subject-identifiers-18>.
 
-   [IANA.OAuth.Parameters]
-              "*** BROKEN REFERENCE ***".
+   [IANA.oauth-parameters]
+              IANA, "OAuth Parameters",
+              <http://www.iana.org/assignments/oauth-parameters>.
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
