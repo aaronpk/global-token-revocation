@@ -16,7 +16,8 @@ Abstract
    Global Token Revocation enables parties such as a security incident
    management tool or an external Identity Provider to send a request to
    an Authorization Server to indicate that it should revoke all of the
-   user's existing tokens and sessions.
+   user's existing tokens and require that the user re-authenticates
+   before issuing new tokens.
 
 About This Document
 
@@ -96,7 +97,8 @@ Table of Contents
    An OAuth Authorization Server issues tokens in response to a user
    authorizing a client.  A party external to the OAuth Authorization
    Server may wish to instruct the Authorization Server to revoke all
-   tokens belonging to a particular user.
+   tokens belonging to a particular user, and prevent the server from
+   issuing new tokens until the user re-authenticates.
 
    For example, a security incident management tool may detect anomalous
    behaviour on a user's account, or if the user logged in through an
@@ -145,7 +147,10 @@ Table of Contents
    Server" and "Authorization Server".
 
    In some cases, the user will log in to the Authorization Server using
-   an external (e.g. enterprise) Identity Provider.
+   an external (e.g. enterprise) Identity Provider.  In that case, when
+   a user logs in to the chat application, the backend server may play
+   the role of an OAuth client (or OpenID or SAML relying party) to the
+   Identity Provider in a new authorization or authentication flow.
 
 3.  Token Revocation
 
