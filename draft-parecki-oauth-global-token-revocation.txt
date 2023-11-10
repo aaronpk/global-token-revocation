@@ -4,8 +4,8 @@
 
 Web Authorization Protocol                                    A. Parecki
 Internet-Draft                                                      Okta
-Intended status: Standards Track                         9 November 2023
-Expires: 12 May 2024
+Intended status: Standards Track                        10 November 2023
+Expires: 13 May 2024
 
 
                         Global Token Revocation
@@ -51,7 +51,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 12 May 2024.
+   This Internet-Draft will expire on 13 May 2024.
 
 Copyright Notice
 
@@ -74,17 +74,19 @@ Table of Contents
      2.1.  Terminology
      2.2.  Roles
    3.  Token Revocation
-     3.1.  Revocation Request
-     3.2.  Revocation Expectations
-     3.3.  Revocation Response
-       3.3.1.  Error Response
-   4.  Implementation Notes
-   5.  Security Considerations
-   6.  IANA Considerations
-     6.1.  OAuth Authorization Server Metadata
-   7.  References
-     7.1.  Normative References
-     7.2.  Informative References
+     3.1.  Revocation Endpoint
+     3.2.  Revocation Request
+     3.3.  Revocation Expectations
+     3.4.  Revocation Response
+       3.4.1.  Error Response
+   4.  Revocation of Access Tokens
+   5.  Authorization Server Metadata
+   6.  Security Considerations
+   7.  IANA Considerations
+     7.1.  OAuth Authorization Server Metadata
+   8.  References
+     8.1.  Normative References
+     8.2.  Informative References
    Appendix A.  Document History
    Acknowledgments
    Author's Address
@@ -148,19 +150,26 @@ Table of Contents
 3.  Token Revocation
 
    A revocation request is a POST request to the Global Token Revocation
-   endpoint.  This URL MUST conform to the rules given in [RFC6749],
-   Section 3.1.
+   endpoint, which starts the process of revoking all tokens for the
+   identified subject.
 
-   The means to obtain the location of the revocation endpoint is out of
-   the scope of this specification.  For example, the authorization
-   server may publish documentation of the location of the endpoint, or
-   may manually register it with tools that will use it.
+3.1.  Revocation Endpoint
 
-   Upon receiving a token revocation request, implementations MUST
-   support the revocation of refresh tokens and active user sessions,
-   and SHOULD support the revocation of access tokens (see Section 4).
+   The Global Token Revocation endpoint is a URL at the authorization
+   server which accepts HTTP POST requests with parameters in the HTTP
+   request message body using the application/json format.  The Global
+   Token Revocation endpoint URL MUST use the https scheme.
 
-3.1.  Revocation Request
+   If the authorization server supports OAuth Server Metadata
+   ([RFC8414]), the authorization server SHOULD include the URL of their
+   Global Token Revocation endpoint in their authorization server
+   metadata document using the global_token_revocation_endpoint
+   parameter as defined in Section 5.
+
+   The authorization server MAY alternatively register the endpoint with
+   tools that will use it.
+
+3.2.  Revocation Request
 
    The request is a POST request with an application/json body
    containing a single property subject, the value of which is a
@@ -206,17 +215,21 @@ Table of Contents
      }
    }
 
-3.2.  Revocation Expectations
+3.3.  Revocation Expectations
 
    Upon receiving a revocation request, authorizing the request, and
-   validating the identified user, the Authorization Server MUST revoke
-   all active refresh tokens, and invalidate all active sessions.
+   validating the identified user, the Authorization Server:
 
-   If possible, the authorization server SHOULD invalidate all access
-   tokens, although this might not be technically feasible, see
-   Section 4.
+   *  MUST revoke all active refresh tokens
 
-3.3.  Revocation Response
+   *  SHOULD invalidate all access tokens, although it is recognized
+      that it might not be technically feasible to invalidate access
+      tokens (see Section 4 below)
+
+   *  MUST NOT issue new access tokens or refresh tokens without re-
+      authenticating the user
+
+3.4.  Revocation Response
 
    This specification indicates success and error conditions by using
    HTTP response codes, and does not define the response body format or
@@ -226,13 +239,13 @@ Table of Contents
    requested set of tokens has begun, the server returns an HTTP 204
    response.
 
-3.3.1.  Error Response
+3.4.1.  Error Response
 
    The following HTTP response codes can be used to indicate various
    error conditions:
 
    *  *400 Bad Request*: The request was malformed, e.g. an unrecognized
-      type of subject identifier.
+      or unsupported type of subject identifier.
 
    *  *401 Unauthorized*: Authentication provided was invalid.
 
@@ -243,7 +256,7 @@ Table of Contents
 
    *  *422 Unable to Process Request*: Unable to log out the user.
 
-4.  Implementation Notes
+4.  Revocation of Access Tokens
 
    OAuth 2.0 allows deployment flexibility with respect to the style of
    access tokens.  The access tokens may be self-contained (e.g.
@@ -266,13 +279,33 @@ Table of Contents
    implementers.  It is not required to revoke access tokens to be able
    to return a success code to the caller.
 
-5.  Security Considerations
+5.  Authorization Server Metadata
+
+   The following authorization server metadata parameters [RFC8414] are
+   introduced to signal the server's capability and policy with respect
+   to Global Token Revocation.
+
+   "global_token_revocation_endpoint":  The URL of the authorization
+      server's global token revocation endpoint.
+
+   "global_token_revocation_endpoint_auth_methods_supported":  OPTIONAL.
+      JSON array containing a list of client authentication methods
+      supported by this introspection endpoint.  The valid client
+      authentication method values are those registered in the IANA
+      "OAuth Token Endpoint Authentication Methods" registry
+      [IANA.oauth-parameters] or those registered in the IANA "OAuth
+      Access Token Types" registry [IANA.oauth-parameters].  (These
+      values are and will remain distinct, due to Section 7.2.)  If
+      omitted, the set of supported authentication methods MUST be
+      determined by other means.
+
+6.  Security Considerations
 
    TODO Security
 
-6.  IANA Considerations
+7.  IANA Considerations
 
-6.1.  OAuth Authorization Server Metadata
+7.1.  OAuth Authorization Server Metadata
 
    IANA has (TBD) registered the following values in the IANA "OAuth
    Authorization Server Metadata" registry of [IANA.oauth-parameters]
@@ -290,23 +323,16 @@ Table of Contents
    *Metadata Name*:
    global_token_revocation_endpoint_auth_methods_supported
 
-   *Metadata Description*: OPTIONAL.  JSON array containing a list of
-   client authentication methods supported by this introspection
-   endpoint.  The valid client authentication method values are those
-   registered in the IANA "OAuth Token Endpoint Authentication Methods"
-   registry [IANA.oauth-parameters] or those registered in the IANA
-   "OAuth Access Token Types" registry [IANA.oauth-parameters].  (These
-   values are and will remain distinct, due to Section 7.2.)  If
-   omitted, the set of supported authentication methods MUST be
-   determined by other means.
+   *Metadata Description*: OPTIONAL.  Indicates the list of client
+   authentication methods supported by this endpoint.
 
    *Change Controller*: IESG
 
    *Specification Document*: Section X of [[ this specification ]]
 
-7.  References
+8.  References
 
-7.1.  Normative References
+8.1.  Normative References
 
    [I-D.ietf-secevent-subject-identifiers]
               Backman, A., Scurtescu, M., and P. Jain, "Subject
@@ -337,7 +363,7 @@ Table of Contents
               DOI 10.17487/RFC8414, June 2018,
               <https://www.rfc-editor.org/rfc/rfc8414>.
 
-7.2.  Informative References
+8.2.  Informative References
 
    [OpenID]   Sakimura, N., Bradley, J., Jones, M., de Medeiros, B., and
               C. Mortimore, "OpenID Connect Core 1.0", November 2014,
@@ -364,6 +390,14 @@ Table of Contents
 Appendix A.  Document History
 
    (( To be removed from the final specification ))
+
+   -01
+
+   *  Clarified revocation expectations
+
+   *  Better definition of endpoint
+
+   *  Added section defining endpoint in Authorization Server Metadata
 
    -00
 
