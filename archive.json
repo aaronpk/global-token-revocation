@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2023-12-19T00:43:15.597648+00:00",
+  "timestamp": "2023-12-21T00:42:25.751734+00:00",
   "repo": "aaronpk/global-token-revocation",
   "labels": [
     {
@@ -49,6 +49,23 @@
       "color": "ffffff"
     }
   ],
-  "issues": [],
+  "issues": [
+    {
+      "number": 1,
+      "id": "I_kwDOKrR-1856Qdxy",
+      "title": "Add a section describing how this differs from existing logout specs",
+      "url": "https://github.com/aaronpk/global-token-revocation/issues/1",
+      "state": "OPEN",
+      "author": "aaronpk",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2023-12-20T19:21:14Z",
+      "updatedAt": "2023-12-20T19:21:14Z",
+      "closedAt": null,
+      "comments": []
+    }
+  ],
   "pulls": []
 }
