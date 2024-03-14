@@ -4,8 +4,8 @@
 
 Web Authorization Protocol                                    A. Parecki
 Internet-Draft                                                      Okta
-Intended status: Standards Track                           13 March 2024
-Expires: 14 September 2024
+Intended status: Standards Track                           14 March 2024
+Expires: 15 September 2024
 
 
                         Global Token Revocation
@@ -52,7 +52,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 14 September 2024.
+   This Internet-Draft will expire on 15 September 2024.
 
 Copyright Notice
 
@@ -84,7 +84,9 @@ Table of Contents
    4.  Revocation of Access Tokens
    5.  Authorization Server Metadata
    6.  Security Considerations
-     6.1.  Enumeration of User Accounts
+     6.1.  Authentication of Revocation Request
+     6.2.  Enumeration of User Accounts
+     6.3.  Malicious Authorization Server
    7.  IANA Considerations
      7.1.  OAuth Authorization Server Metadata
    8.  References
@@ -256,8 +258,8 @@ Table of Contents
       that it might not be technically feasible to invalidate access
       tokens (see Section 4 below)
 
-   *  MUST NOT issue new access tokens or refresh tokens without re-
-      authenticating the user
+   *  MUST re-authenticate the user before issuing new access tokens or
+      refresh tokens
 
 3.4.  Revocation Response
 
@@ -304,7 +306,9 @@ Table of Contents
    the authorization server is able to revoke an access token by
    removing it from storage.  In the former case, without storing
    tokens, it may be impossible to revoke tokens without taking
-   additional measures.
+   additional measures.  One such measure is to use
+   [I-D.ietf-oauth-status-list] to maintain a distributed and easily-
+   compressed list of token revocation statuses.
 
    For this reason, revocation of access tokens is optional in this
    specification, since it may pose too significant of a burden for
@@ -333,7 +337,28 @@ Table of Contents
 
 6.  Security Considerations
 
-6.1.  Enumeration of User Accounts
+6.1.  Authentication of Revocation Request
+
+   While Section 3.2 requires that the revocation request is an
+   authenticated request, the specifics of the authentication are out of
+   scope of this specification.
+
+   Since the revocation request ultimately has wide-reaching effects (a
+   user is expected to be logged out of all devices), this presents a
+   new Denial of Service attack vector.  As such, the authentication
+   used for this request SHOULD be narrowly scoped to avoid granting
+   unnecessary privileges to the caller.
+
+   For example, if using OAuth Bearer Tokens, the token SHOULD be issued
+   with a single scope that enables it to perform the revocation
+   request, and no other type of token issued should include this scope.
+
+   If the authorization server is multi-tenant (supports multiple
+   customers) through different identity providers, each identity
+   provider SHOULD use its own scoped credential that is only authorized
+   to revoke tokens for users within the same tenant.
+
+6.2.  Enumeration of User Accounts
 
    Typically, an API that accepts a user identifier and returns
    different statuses depending on whether the user exists would provide
@@ -349,14 +374,14 @@ Table of Contents
    attacker would be able to enumerate user accounts.  However, since
    the request is not just testing the presence of a user account, but
    actually revoking the tokens associated with the user if successful,
-   this would likely be easily visible in any audit logs as many users
+   this would likely be easily visible in any audit logs as many users'
    tokens would be revoked in a short period of time.
 
    To mitigate some of the concerns of providing such a powerful API
    endpoint, the users that a particular client can request revocation
    for SHOULD be limited, and the authentication of the request SHOULD
    be used to scope the possible user revocation list to only users
-   authorized to the client.
+   authorized to the client as described in Section 6.1.
 
    For example, a multi-tenant identity provider that uses different
    signing keys for users associated with different tenants, can also
@@ -365,6 +390,20 @@ Table of Contents
    [RFC7523].  This enables the authorization server receiving the
    request to only accept revocation requests for users that are
    associated with the particular tenant at the identity provider.
+
+6.3.  Malicious Authorization Server
+
+   From the point of view of an identity provider that supports
+   integrations with multiple downstream applications, there is an
+   opportunity for a downstream application to maliciously set up a
+   Global Token Revocation endpoint to harvest user identifiers and
+   authentication of the revocation requests.
+
+   Similarly as described in Section 6.1 above, each integration SHOULD
+   be using separate authentication credentials, and each credential
+   SHOULD be scoped as narrowly as possible, such that a malicious
+   server that receives this authentication cannot replay it anywhere
+   else to perform any actions on other systems.
 
 7.  IANA Considerations
 
@@ -425,6 +464,13 @@ Table of Contents
               <https://www.rfc-editor.org/rfc/rfc9493>.
 
 8.2.  Informative References
+
+   [I-D.ietf-oauth-status-list]
+              Looker, T., Bastian, P., and C. Bormann, "Token Status
+              List", Work in Progress, Internet-Draft, draft-ietf-oauth-
+              status-list-02, 3 March 2024,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-oauth-
+              status-list-02>.
 
    [OpenID]   Sakimura, N., Bradley, J., Jones, M., de Medeiros, B., and
               C. Mortimore, "OpenID Connect Core 1.0", November 2014,
@@ -550,6 +596,16 @@ Appendix B.  Document History
 
    (( To be removed from the final specification ))
 
+   -03
+
+   *  Renamed property from subject to sub_id for consistency with JWT
+      claim name defined in RFC9493
+
+   *  Added reference to draft-ietf-oauth-status-list
+
+   *  Added additional security considerations for authentication of the
+      revocation request and malicious authorization servers
+
    -02
 
    *  Added security consideration around enumeration of user accounts
@@ -572,8 +628,8 @@ Appendix B.  Document History
 Acknowledgments
 
    The authors would like to thank the following people for their
-   contributions and reviews of this specification: George Fletcher,
-   Karl McGuinness, Mike Jones.
+   contributions and reviews of this specification: Apoorva Deshpande,
+   George Fletcher, Karl McGuinness, Mike Jones.
 
 Author's Address
 

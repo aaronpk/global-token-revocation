@@ -1031,7 +1031,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Parecki</td>
-<td class="center">Expires 14 September 2024</td>
+<td class="center">Expires 15 September 2024</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1044,12 +1044,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-parecki-oauth-global-token-revocation-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2024-03-13" class="published">13 March 2024</time>
+<time datetime="2024-03-14" class="published">14 March 2024</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2024-09-14">14 September 2024</time></dd>
+<dd class="expires"><time datetime="2024-09-15">15 September 2024</time></dd>
 <dt class="label-authors">Author:</dt>
 <dd class="authors">
 <div class="author">
@@ -1099,7 +1099,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 14 September 2024.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 15 September 2024.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1177,7 +1177,13 @@ svg :is([fill="white"], [fill^="#fff"]) {
             <p id="section-toc.1-1.6.1"><a href="#section-6" class="auto internal xref">6</a>.  <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.1">
-                <p id="section-toc.1-1.6.2.1.1"><a href="#section-6.1" class="auto internal xref">6.1</a>.  <a href="#name-enumeration-of-user-account" class="internal xref">Enumeration of User Accounts</a></p>
+                <p id="section-toc.1-1.6.2.1.1"><a href="#section-6.1" class="auto internal xref">6.1</a>.  <a href="#name-authentication-of-revocatio" class="internal xref">Authentication of Revocation Request</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.2">
+                <p id="section-toc.1-1.6.2.2.1"><a href="#section-6.2" class="auto internal xref">6.2</a>.  <a href="#name-enumeration-of-user-account" class="internal xref">Enumeration of User Accounts</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.3">
+                <p id="section-toc.1-1.6.2.3.1"><a href="#section-6.3" class="auto internal xref">6.3</a>.  <a href="#name-malicious-authorization-ser" class="internal xref">Malicious Authorization Server</a></p>
 </li>
             </ul>
 </li>
@@ -1366,7 +1372,7 @@ Authorization: Bearer f5641763544a7b24b08e4f74045
             <p id="section-3.3-2.2.1"><span class="bcp14">SHOULD</span> invalidate all access tokens, although it is recognized that it might not be technically feasible to invalidate access tokens (see <a href="#access-tokens" class="auto internal xref">Section 4</a> below)<a href="#section-3.3-2.2.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-3.3-2.3">
-            <p id="section-3.3-2.3.1"><span class="bcp14">MUST NOT</span> issue new access tokens or refresh tokens without re-authenticating the user<a href="#section-3.3-2.3.1" class="pilcrow">¶</a></p>
+            <p id="section-3.3-2.3.1"><span class="bcp14">MUST</span> re-authenticate the user before issuing new access tokens or refresh tokens<a href="#section-3.3-2.3.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 </section>
@@ -1428,7 +1434,7 @@ design may, however, instead use access tokens that are handles (also known as "
 referring to authorization data stored at the authorization server.<a href="#section-4-1" class="pilcrow">¶</a></p>
 <p id="section-4-2">While these are not the only options, they illustrate the
 implications for revocation.  In the latter case of reference tokens, the authorization
-server is able to revoke an access token by removing it from storage. In the former case, without storing tokens, it may be impossible to revoke tokens without taking additional measures.<a href="#section-4-2" class="pilcrow">¶</a></p>
+server is able to revoke an access token by removing it from storage. In the former case, without storing tokens, it may be impossible to revoke tokens without taking additional measures. One such measure is to use <span>[<a href="#I-D.ietf-oauth-status-list" class="cite xref">I-D.ietf-oauth-status-list</a>]</span> to maintain a distributed and easily-compressed list of token revocation statuses.<a href="#section-4-2" class="pilcrow">¶</a></p>
 <p id="section-4-3">For this reason, revocation of access tokens is optional in this specification, since it may pose too significant of a burden for implementers. It is not required to revoke access tokens to be able to return a success code to the caller.<a href="#section-4-3" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1457,15 +1463,35 @@ server is able to revoke an access token by removing it from storage. In the for
       <h2 id="name-security-considerations">
 <a href="#section-6" class="section-number selfRef">6. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
       </h2>
-<div id="enumeration-of-user-accounts">
+<div id="revocation-request-authentication">
 <section id="section-6.1">
-        <h3 id="name-enumeration-of-user-account">
-<a href="#section-6.1" class="section-number selfRef">6.1. </a><a href="#name-enumeration-of-user-account" class="section-name selfRef">Enumeration of User Accounts</a>
+        <h3 id="name-authentication-of-revocatio">
+<a href="#section-6.1" class="section-number selfRef">6.1. </a><a href="#name-authentication-of-revocatio" class="section-name selfRef">Authentication of Revocation Request</a>
         </h3>
-<p id="section-6.1-1">Typically, an API that accepts a user identifier and returns different statuses depending on whether the user exists would provide an attack vector allowing enumeration of user accounts. This specification does require a "User Not Found" response, so would normally fall under this category. However, requests to the endpoint defined by this specification are required to be authenticated, so this is not considered a public endpoint.<a href="#section-6.1-1" class="pilcrow">¶</a></p>
-<p id="section-6.1-2">If the tool making the request is compromised, and the attacker can impersonate the requests from this tool (either by coercing the tool to make the request, or by extracting the credentials), then the attacker would be able to enumerate user accounts. However, since the request is not just testing the presence of a user account, but actually revoking the tokens associated with the user if successful, this would likely be easily visible in any audit logs as many users tokens would be revoked in a short period of time.<a href="#section-6.1-2" class="pilcrow">¶</a></p>
-<p id="section-6.1-3">To mitigate some of the concerns of providing such a powerful API endpoint, the users that a particular client can request revocation for <span class="bcp14">SHOULD</span> be limited, and the authentication of the request <span class="bcp14">SHOULD</span> be used to scope the possible user revocation list to only users authorized to the client.<a href="#section-6.1-3" class="pilcrow">¶</a></p>
-<p id="section-6.1-4">For example, a multi-tenant identity provider that uses different signing keys for users associated with different tenants, can also use the same signing keys to authenticate revocation requests, such as creating a JWT to use as client authentication as described in <span>[<a href="#RFC7523" class="cite xref">RFC7523</a>]</span>. This enables the authorization server receiving the request to only accept revocation requests for users that are associated with the particular tenant at the identity provider.<a href="#section-6.1-4" class="pilcrow">¶</a></p>
+<p id="section-6.1-1">While <a href="#revocation-request" class="auto internal xref">Section 3.2</a> requires that the revocation request is an authenticated request, the specifics of the authentication are out of scope of this specification.<a href="#section-6.1-1" class="pilcrow">¶</a></p>
+<p id="section-6.1-2">Since the revocation request ultimately has wide-reaching effects (a user is expected to be logged out of all devices), this presents a new Denial of Service attack vector. As such, the authentication used for this request <span class="bcp14">SHOULD</span> be narrowly scoped to avoid granting unnecessary privileges to the caller.<a href="#section-6.1-2" class="pilcrow">¶</a></p>
+<p id="section-6.1-3">For example, if using OAuth Bearer Tokens, the token <span class="bcp14">SHOULD</span> be issued with a single scope that enables it to perform the revocation request, and no other type of token issued should include this scope.<a href="#section-6.1-3" class="pilcrow">¶</a></p>
+<p id="section-6.1-4">If the authorization server is multi-tenant (supports multiple customers) through different identity providers, each identity provider <span class="bcp14">SHOULD</span> use its own scoped credential that is only authorized to revoke tokens for users within the same tenant.<a href="#section-6.1-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="enumeration-of-user-accounts">
+<section id="section-6.2">
+        <h3 id="name-enumeration-of-user-account">
+<a href="#section-6.2" class="section-number selfRef">6.2. </a><a href="#name-enumeration-of-user-account" class="section-name selfRef">Enumeration of User Accounts</a>
+        </h3>
+<p id="section-6.2-1">Typically, an API that accepts a user identifier and returns different statuses depending on whether the user exists would provide an attack vector allowing enumeration of user accounts. This specification does require a "User Not Found" response, so would normally fall under this category. However, requests to the endpoint defined by this specification are required to be authenticated, so this is not considered a public endpoint.<a href="#section-6.2-1" class="pilcrow">¶</a></p>
+<p id="section-6.2-2">If the tool making the request is compromised, and the attacker can impersonate the requests from this tool (either by coercing the tool to make the request, or by extracting the credentials), then the attacker would be able to enumerate user accounts. However, since the request is not just testing the presence of a user account, but actually revoking the tokens associated with the user if successful, this would likely be easily visible in any audit logs as many users' tokens would be revoked in a short period of time.<a href="#section-6.2-2" class="pilcrow">¶</a></p>
+<p id="section-6.2-3">To mitigate some of the concerns of providing such a powerful API endpoint, the users that a particular client can request revocation for <span class="bcp14">SHOULD</span> be limited, and the authentication of the request <span class="bcp14">SHOULD</span> be used to scope the possible user revocation list to only users authorized to the client as described in <a href="#revocation-request-authentication" class="auto internal xref">Section 6.1</a>.<a href="#section-6.2-3" class="pilcrow">¶</a></p>
+<p id="section-6.2-4">For example, a multi-tenant identity provider that uses different signing keys for users associated with different tenants, can also use the same signing keys to authenticate revocation requests, such as creating a JWT to use as client authentication as described in <span>[<a href="#RFC7523" class="cite xref">RFC7523</a>]</span>. This enables the authorization server receiving the request to only accept revocation requests for users that are associated with the particular tenant at the identity provider.<a href="#section-6.2-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="malicious-authorization-server">
+<section id="section-6.3">
+        <h3 id="name-malicious-authorization-ser">
+<a href="#section-6.3" class="section-number selfRef">6.3. </a><a href="#name-malicious-authorization-ser" class="section-name selfRef">Malicious Authorization Server</a>
+        </h3>
+<p id="section-6.3-1">From the point of view of an identity provider that supports integrations with multiple downstream applications, there is an opportunity for a downstream application to maliciously set up a Global Token Revocation endpoint to harvest user identifiers and authentication of the revocation requests.<a href="#section-6.3-1" class="pilcrow">¶</a></p>
+<p id="section-6.3-2">Similarly as described in <a href="#revocation-request-authentication" class="auto internal xref">Section 6.1</a> above, each integration <span class="bcp14">SHOULD</span> be using separate authentication credentials, and each credential <span class="bcp14">SHOULD</span> be scoped as narrowly as possible, such that a malicious server that receives this authentication cannot replay it anywhere else to perform any actions on other systems.<a href="#section-6.3-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1536,6 +1562,10 @@ server is able to revoke an access token by removing it from storage. In the for
 <a href="#section-8.2" class="section-number selfRef">8.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
         </h3>
 <dl class="references">
+<dt id="I-D.ietf-oauth-status-list">[I-D.ietf-oauth-status-list]</dt>
+        <dd>
+<span class="refAuthor">Looker, T.</span>, <span class="refAuthor">Bastian, P.</span>, and <span class="refAuthor">C. Bormann</span>, <span class="refTitle">"Token Status List"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-oauth-status-list-02</span>, <time datetime="2024-03-03" class="refDate">3 March 2024</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-oauth-status-list-02">https://datatracker.ietf.org/doc/html/draft-ietf-oauth-status-list-02</a>&gt;</span>. </dd>
+<dd class="break"></dd>
 <dt id="OpenID">[OpenID]</dt>
         <dd>
 <span class="refAuthor">Sakimura, N.</span>, <span class="refAuthor">Bradley, J.</span>, <span class="refAuthor">Jones, M.</span>, <span class="refAuthor">de Medeiros, B.</span>, and <span class="refAuthor">C. Mortimore</span>, <span class="refTitle">"OpenID Connect Core 1.0"</span>, <time datetime="2014-11" class="refDate">November 2014</time>, <span>&lt;<a href="https://openid.net/specs/openid-connect-core-1_0.html">https://openid.net/specs/openid-connect-core-1_0.html</a>&gt;</span>. </dd>
@@ -1616,31 +1646,43 @@ server is able to revoke an access token by removing it from storage. In the for
 <a href="#appendix-B" class="section-number selfRef">Appendix B. </a><a href="#name-document-history" class="section-name selfRef">Document History</a>
       </h2>
 <p id="appendix-B-1">(( To be removed from the final specification ))<a href="#appendix-B-1" class="pilcrow">¶</a></p>
-<p id="appendix-B-2">-02<a href="#appendix-B-2" class="pilcrow">¶</a></p>
+<p id="appendix-B-2">-03<a href="#appendix-B-2" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="appendix-B-3.1">
-          <p id="appendix-B-3.1.1">Added security consideration around enumeration of user accounts<a href="#appendix-B-3.1.1" class="pilcrow">¶</a></p>
+          <p id="appendix-B-3.1.1">Renamed property from <code>subject</code> to <code>sub_id</code> for consistency with JWT claim name defined in RFC9493<a href="#appendix-B-3.1.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="appendix-B-3.2">
-          <p id="appendix-B-3.2.1">Added an appendix describing the differences between this and related logout specifications<a href="#appendix-B-3.2.1" class="pilcrow">¶</a></p>
+          <p id="appendix-B-3.2.1">Added reference to draft-ietf-oauth-status-list<a href="#appendix-B-3.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="appendix-B-3.3">
+          <p id="appendix-B-3.3.1">Added additional security considerations for authentication of the revocation request and malicious authorization servers<a href="#appendix-B-3.3.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="appendix-B-4">-01<a href="#appendix-B-4" class="pilcrow">¶</a></p>
+<p id="appendix-B-4">-02<a href="#appendix-B-4" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="appendix-B-5.1">
-          <p id="appendix-B-5.1.1">Clarified revocation expectations<a href="#appendix-B-5.1.1" class="pilcrow">¶</a></p>
+          <p id="appendix-B-5.1.1">Added security consideration around enumeration of user accounts<a href="#appendix-B-5.1.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="appendix-B-5.2">
-          <p id="appendix-B-5.2.1">Better definition of endpoint<a href="#appendix-B-5.2.1" class="pilcrow">¶</a></p>
-</li>
-        <li class="normal" id="appendix-B-5.3">
-          <p id="appendix-B-5.3.1">Added section defining endpoint in Authorization Server Metadata<a href="#appendix-B-5.3.1" class="pilcrow">¶</a></p>
+          <p id="appendix-B-5.2.1">Added an appendix describing the differences between this and related logout specifications<a href="#appendix-B-5.2.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="appendix-B-6">-00<a href="#appendix-B-6" class="pilcrow">¶</a></p>
+<p id="appendix-B-6">-01<a href="#appendix-B-6" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="appendix-B-7.1">
-          <p id="appendix-B-7.1.1">Initial Draft<a href="#appendix-B-7.1.1" class="pilcrow">¶</a></p>
+          <p id="appendix-B-7.1.1">Clarified revocation expectations<a href="#appendix-B-7.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="appendix-B-7.2">
+          <p id="appendix-B-7.2.1">Better definition of endpoint<a href="#appendix-B-7.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="appendix-B-7.3">
+          <p id="appendix-B-7.3.1">Added section defining endpoint in Authorization Server Metadata<a href="#appendix-B-7.3.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
+<p id="appendix-B-8">-00<a href="#appendix-B-8" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="appendix-B-9.1">
+          <p id="appendix-B-9.1.1">Initial Draft<a href="#appendix-B-9.1.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 </section>
@@ -1650,7 +1692,7 @@ server is able to revoke an access token by removing it from storage. In the for
       <h2 id="name-acknowledgments">
 <a href="#name-acknowledgments" class="section-name selfRef">Acknowledgments</a>
       </h2>
-<p id="appendix-C-1">The authors would like to thank the following people for their contributions and reviews of this specification: George Fletcher, Karl McGuinness, Mike Jones.<a href="#appendix-C-1" class="pilcrow">¶</a></p>
+<p id="appendix-C-1">The authors would like to thank the following people for their contributions and reviews of this specification: Apoorva Deshpande, George Fletcher, Karl McGuinness, Mike Jones.<a href="#appendix-C-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="authors-addresses">
