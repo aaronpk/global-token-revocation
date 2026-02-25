@@ -136,7 +136,7 @@ The request is a POST request with an `application/json` body containing a singl
 
 In practice, this means the value of `sub_id` is a JSON object with a property `format`, and at least one additional property depending on the value of `format`.
 
-The request MUST also be authenticated, the particular authentication method and means by which the authentication is established is out of scope of this specification, but may include OAuth 2.0 Bearer Token {{RFC6750}} or a client authentication JWT {{RFC7523}}.
+The request MUST also be authenticated. This specification RECOMMENDS using a private key JWT as described in {{authn-private-key-jwt}}. Other authentication methods such as OAuth 2.0 Bearer Token {{RFC6750}} MAY be used where appropriate.
 
 The following example requests that all tokens for a user identified by an email address be revoked using the Email Identifier Format as defined in {{Section 3.2.2 of RFC9493}}:
 
@@ -211,6 +211,60 @@ The following HTTP response codes can be used to indicate various error conditio
 
 
 
+## Authentication Using Private Key JWT {#authn-private-key-jwt}
+
+When the caller is an Identity Provider, the RECOMMENDED authentication method is to send a signed JWT as a Bearer token in the HTTP `Authorization` header, following the structure of the `private_key_jwt` client authentication method defined in {{RFC7523}}.
+
+The JWT MUST contain the following claims:
+
+`iss`:
+: The issuer identifier of the Identity Provider. If using OpenID Connect, this MUST be the same issuer value that the IdP uses as the issuer value in ID tokens.
+
+`sub`:
+: An identifier for the caller within the IdP. For OpenID Connect clients this is typically the `client_id`; for SAML integrations it is typically the `appInstanceId`.
+
+`aud`:
+: The URL of the Global Token Revocation endpoint. This MUST be the exact endpoint URL, without query string parameters or fragment identifiers.
+
+`jti`:
+: A unique identifier for this JWT. The authorization server SHOULD reject requests using a `jti` value that has been seen before within the token's validity window, in order to prevent replay attacks.
+
+`iat`:
+: The unit timestamp at which the JWT was created.
+
+`exp`:
+: The expiration time of the JWT. The JWT SHOULD be short-lived; a validity window of five minutes is RECOMMENDED.
+
+The JWT MUST be signed using an asymmetric algorithm (e.g., RS256 or ES256). The signing key SHOULD be the same private key that the IdP uses to sign its ID tokens or SAML assertions, so that the authorization server can verify the signature using the IdP's already-published public keys (e.g., via the IdP's JWKS endpoint referenced in its OpenID Connect discovery document {{RFC8414}}).
+
+The JWT is sent as a Bearer token:
+
+    POST /global-token-revocation
+    Host: as.example.com
+    Content-Type: application/json
+    Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjEifQ...
+
+    {
+      "sub_id": {
+        "format": "email",
+        "email": "user@example.com"
+      }
+    }
+
+Where the JWT payload is:
+
+    {
+      "iss": "https://idp.example.com/",
+      "sub": "client_id_of_integration",
+      "aud": "https://as.example.com/global-token-revocation",
+      "jti": "a3f8d2c1-4b7e-4f0a-9c2d-1e5b8a7f3d6c",
+      "iat": 1741200000,
+      "exp": 1741200300
+    }
+
+The authorization server MUST validate the JWT signature, verify that the claims are well-formed, and confirm that the `aud` claim matches the revocation endpoint URL. It MUST also verify that the `exp` has not passed and that the `jti` has not been previously used.
+
+
 # Revocation of Access Tokens {#access-tokens}
 
 OAuth 2.0 allows deployment flexibility with respect to the style of
@@ -258,13 +312,13 @@ The following authorization server metadata parameters {{RFC8414}} are introduce
 
 ## Authentication of Revocation Request {#revocation-request-authentication}
 
-While {{revocation-request}} requires that the revocation request is an authenticated request, the specifics of the authentication are out of scope of this specification.
+The revocation request MUST be authenticated as described in {{revocation-request}}. The RECOMMENDED method is the private key JWT mechanism described in {{authn-private-key-jwt}}, which binds the credential to the specific endpoint URL via the `aud` claim and limits its validity window, reducing the risk of credential misuse or replay.
 
 Since the revocation request ultimately has wide-reaching effects (a user is expected to be logged out of all devices), this presents a new Denial of Service attack vector. As such, the authentication used for this request SHOULD be narrowly scoped to avoid granting unnecessary privileges to the caller.
 
 For example, if using OAuth Bearer Tokens, the token SHOULD be issued with a single scope that enables it to perform only the revocation request, and no other type of token issued should include this scope.
 
-If the authorization server is multi-tenant (supports multiple customers) through different identity providers, each identity provider SHOULD use its own scoped credential that is only authorized to revoke tokens for users within the same tenant.
+If the authorization server is multi-tenant (supports multiple customers) through different identity providers, each identity provider SHOULD use its own scoped credential that is only authorized to revoke tokens for users within the same tenant. When using private key JWT authentication as described in {{authn-private-key-jwt}}, the `iss` claim serves this purpose naturally, as each IdP signs with its own private key.
 
 
 ## Enumeration of User Accounts
@@ -365,6 +419,7 @@ While SSF and Global Token Revocation serve complementary purposes, they can als
 -06
 
 * added description of how to use SSF to confirm revocation
+* added description of how to use `private_key_jwt` to authenticate requests to the Authorization Server
 
 -05
 
