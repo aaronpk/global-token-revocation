@@ -41,6 +41,24 @@ informative:
   RFC7523:
   RFC9068:
   I-D.ietf-oauth-status-list:
+  CAEP:
+    title: "Continuous Access Evaluation Profile 1.0"
+    target: https://openid.net/specs/openid-caep-1_0-final.html
+    date: 2025
+    author:
+      - ins: A. Tulshibagwale
+      - ins: T. Cappalli
+  SSF:
+    title: "OpenID Shared Signals and Events Framework Specification 1.0"
+    target: https://openid.net/specs/openid-sharedsignals-framework-1_0.html
+    date: 2025
+    author:
+      - ins: A. Tulshibagwale
+      - ins: T. Cappalli
+      - ins: M. Scurtescu
+      - ins: A. Backman
+      - ins: J. Bradley
+      - ins: S. Miel
   OpenID:
     title: OpenID Connect Core 1.0 incorporating errata set 2
     target: https://openid.net/specs/openid-connect-core-1_0.html
@@ -210,6 +228,21 @@ server is able to revoke an access token by removing it from storage. In the for
 For this reason, revocation of access tokens is optional in this specification, since it may pose too significant of a burden for implementers. It is not required to revoke access tokens to be able to return a success code to the caller.
 
 
+# Revocation Completion Notification {#revocation-completion}
+
+The 204 response defined in {{revocation-response}} indicates that the authorization server has accepted the revocation request and that the revocation process has begun. It does not guarantee that all tokens have been revoked at the moment the response is returned. In many deployments, particularly those with distributed token storage or self-contained access tokens, full revocation may complete asynchronously after the HTTP response has been sent.
+
+For use cases where a caller needs confirmation that revocation is fully complete — for example, a security incident management tool that must verify all active sessions have been terminated before proceeding — a notification mechanism is needed.
+
+Authorization servers that support the Shared Signals Framework {{SSF}} MAY use it to deliver a completion notification to the caller. Specifically, the authorization server MAY transmit a CAEP "Session Revoked" event {{CAEP}} to a preconfigured SSF stream for the caller once all tokens for the identified subject have been revoked and the re-authentication requirement has been enforced.
+
+The use of SSF for completion notification is entirely OPTIONAL. Callers that do not require confirmation of completion MAY rely solely on the 204 response as an indication that revocation has been initiated. The Global Token Revocation endpoint defined in this specification operates independently of whether SSF is supported by either party.
+
+If an authorization server supports SSF-based completion notifications, it SHOULD document this capability and the event types it delivers out of band, as no authorization server metadata parameter is defined here for this purpose.
+
+Note that the direction of the SSF stream in this case is reversed from the typical identity-provider-to-authorization-server direction described in {{ssf-relationship}}: here, the authorization server acts as the SSF transmitter, delivering events back to the caller (e.g., the identity provider or security tool) that initiated the revocation request.
+
+
 # Authorization Server Metadata
 
 The following authorization server metadata parameters {{RFC8414}} are introduced to signal the server's capability and policy with respect to Global Token Revocation.
@@ -312,7 +345,7 @@ Additionally, OpenID Connect Back-Channel Logout identifies the user using the `
 
 Global Token Revocation works regardless of the protocol that the user uses to authenticate, so works equally well with OpenID Connect and SAML integrations.
 
-## Shared Signals Framework
+## Shared Signals Framework {#ssf-relationship}
 
 The Shared Signals Framework at the OpenID Foundation provides two specifications that have functionality related to session and token revocation.
 
@@ -321,6 +354,8 @@ The Shared Signals Framework at the OpenID Foundation provides two specification
 [Risk Incident Sharing and Coordination (RISC)](https://openid.net/specs/openid-risc-profile-specification-1_0.html) defines events that have somewhat stronger defined meanings compared to CAEP. In particular, the "Account Disabled" event has clear meaning and strongly implies that a receiver should also disable the specified account. However, RISC also has a mechanism for a user to opt out of sending events for their account, so it does not provide the same level of assurance as a Global Token Revocation request.
 
 Lastly, it is more complex to set up a receiver for CAEP and RISC events compared to a receiver for the Global Token Revocation request, so if the receiver is only interested in supporting the revocation use cases, it is much simpler to support the single POST request described in this draft.
+
+While SSF and Global Token Revocation serve complementary purposes, they can also be used together. As described in {{revocation-completion}}, an authorization server MAY use SSF to deliver a completion notification back to the caller once revocation is fully complete, reversing the typical signal direction so that the AS acts as SSF transmitter.
 
 
 # Document History
