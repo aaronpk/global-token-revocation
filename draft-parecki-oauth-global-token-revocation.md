@@ -362,6 +362,10 @@ While SSF and Global Token Revocation serve complementary purposes, they can als
 
 (( To be removed from the final specification ))
 
+-06
+
+* added description of how to use SSF to confirm revocation
+
 -05
 
 * Editorial clarifications
